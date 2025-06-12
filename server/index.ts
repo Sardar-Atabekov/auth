@@ -47,9 +47,16 @@ console.log('Connecting to MongoDB...', process.env.MONGODB_DB);
 
 (async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI!, {
+    if (!process.env.MONGODB_URI) {
+      throw new Error('Missing MONGODB_URI in environment');
+    }
+
+    await mongoose.connect(process.env.MONGODB_URI, {
       dbName: process.env.MONGODB_DB || 'userdb',
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
+
     log('MongoDB connected');
   } catch (err) {
     console.error('MongoDB connection error:', err);
@@ -61,8 +68,8 @@ console.log('Connecting to MongoDB...', process.env.MONGODB_DB);
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || 'Internal Server Error';
+    console.error('Unhandled Error:', err);
     res.status(status).json({ message });
-    throw err;
   });
 
   if (app.get('env') === 'development') {

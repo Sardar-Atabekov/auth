@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useAuthMutation } from '@/hooks/use-auth-mutation';
 
 export default function AuthPage() {
   const { setAuth } = useAuth();
@@ -14,11 +15,15 @@ export default function AuthPage() {
   const [shouldNavigate, setShouldNavigate] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     confirmPassword: '',
   });
+
+  const loginMutation = useAuthMutation('/api/user/auth');
+  const registerMutation = useAuthMutation('/api/user/user');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -27,7 +32,7 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setFormError(null);
 
     try {
       if (!formData.email || !formData.password) {
@@ -38,28 +43,19 @@ export default function AuthPage() {
         throw new Error('Passwords do not match');
       }
 
-      const endpoint = isLoginMode ? '/api/user/auth' : '/api/user/user';
-      const payload = {
+      const mutation = isLoginMode ? loginMutation : registerMutation;
+      const data = await mutation.mutateAsync({
         email: formData.email,
         password: formData.password,
-        lastLogin: new Date().toISOString(),
-      };
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
-      console.log('Response data:', data, response, payload);
-      if (!response.ok) {
-        throw new Error(data.error || 'Authentication failed');
-      }
-
-      setAuth(data.token, data.user);
+      setAuth(data.token, {
+        ...data.user,
+        password: data.user.password ?? '',
+        lastLogin: data.user.lastLogin
+          ? new Date(data.user.lastLogin)
+          : undefined,
+      });
 
       toast({
         title: 'Success!',
@@ -68,11 +64,12 @@ export default function AuthPage() {
           : 'Account created successfully!',
       });
 
+      setFormData({ email: '', password: '', confirmPassword: '' });
       setShouldNavigate(true);
     } catch (err) {
-      console.log('Authentication error:', err);
       const errorMessage =
         err instanceof Error ? err.message : 'An error occurred';
+      setFormError(errorMessage);
       toast({
         title: 'Authentication Error',
         description: errorMessage,
@@ -181,6 +178,10 @@ export default function AuthPage() {
                     placeholder="Confirm your password"
                   />
                 </div>
+              )}
+
+              {formError && (
+                <div className="text-red-600 text-sm mt-2">{formError}</div>
               )}
 
               <Button
