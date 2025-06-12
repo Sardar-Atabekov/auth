@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import authRoutes from './auth'; // подключаем подроуты
+import authRoutes from './auth';
 
 const router = Router();
 

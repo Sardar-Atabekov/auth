@@ -29,7 +29,6 @@ export default function AuthPage() {
     setIsLoading(true);
 
     try {
-      // Basic validation
       if (!formData.email || !formData.password) {
         throw new Error('Please fill in all required fields');
       }
@@ -58,7 +57,6 @@ export default function AuthPage() {
         throw new Error(data.error || 'Authentication failed');
       }
 
-      // Parse JWT to get user info
       const tokenParts = data.token.split('.');
       const payload_decoded = JSON.parse(atob(tokenParts[1]));
 
@@ -92,7 +90,6 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 bg-gray-50">
       <div className="max-w-md w-full space-y-8">
-        {/* Header */}
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome</h2>
           <p className="text-gray-600">
@@ -100,9 +97,7 @@ export default function AuthPage() {
           </p>
         </div>
 
-        {/* Authentication Card */}
         <Card className="shadow-lg border border-gray-200">
-          {/* Mode Toggle */}
           <div className="flex border-b border-gray-200">
             <button
               onClick={() => setIsLoginMode(true)}
@@ -126,10 +121,8 @@ export default function AuthPage() {
             </button>
           </div>
 
-          {/* Form */}
           <CardContent className="p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email */}
               <div>
                 <Label
                   htmlFor="email"
@@ -149,7 +142,6 @@ export default function AuthPage() {
                 />
               </div>
 
-              {/* Password */}
               <div>
                 <Label
                   htmlFor="password"
@@ -169,7 +161,6 @@ export default function AuthPage() {
                 />
               </div>
 
-              {/* Confirm Password (Register Mode) */}
               {!isLoginMode && (
                 <div>
                   <Label
@@ -190,7 +181,6 @@ export default function AuthPage() {
                 </div>
               )}
 
-              {/* Submit Button */}
               <Button
                 type="submit"
                 disabled={isLoading}

@@ -81,7 +81,7 @@ export default defineConfig([
       'no-console': isProd ? ['error', { allow: ['warn', 'error'] }] : 'off',
       'no-debugger': isProd ? 'error' : 'off',
       'no-empty': ['warn', { allowEmptyCatch: true }],
-      'no-unused-vars': 'off', // отключаем в пользу TS правила
+      'no-unused-vars': 'off',
       'no-undef': 'off',
 
       // Импорты
