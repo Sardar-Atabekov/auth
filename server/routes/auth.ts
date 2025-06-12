@@ -40,15 +40,15 @@ router.post('/auth', async (req: express.Request, res: express.Response) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
-        error: 'Неверные учетные данные',
-        details: 'Пользователь с таким email не найден',
+        error: 'Invalid credentials',
+        details: 'User with this email not found',
       });
     }
 
     if (user.isLocked) {
       return res.status(403).json({
-        error: 'Аккаунт заблокирован',
-        details: 'Обратитесь в поддержку для разблокировки',
+        error: 'Account is locked',
+        details: 'Contact support to unlock your account',
       });
     }
 
@@ -60,15 +60,15 @@ router.post('/auth', async (req: express.Request, res: express.Response) => {
         user.isLocked = true;
         await user.save();
         return res.status(403).json({
-          error: 'Аккаунт временно заблокирован',
-          details: 'Слишком много неудачных попыток входа',
+          error: 'Account temporarily locked',
+          details: 'Too many failed login attempts',
         });
       }
 
       await user.save();
       return res.status(401).json({
-        error: 'Неверные учетные данные',
-        details: 'Неправильный пароль',
+        error: 'Invalid credentials',
+        details: 'Incorrect password',
         attemptsLeft: 100 - user.failedLoginAttempts,
       });
     }
@@ -96,7 +96,7 @@ router.post('/auth', async (req: express.Request, res: express.Response) => {
 
     if (err instanceof z.ZodError) {
       return res.status(400).json({
-        error: 'Ошибка валидации',
+        error: 'Validation error',
         details: err.errors.map((e) => ({
           field: e.path.join('.'),
           message: e.message,
@@ -105,8 +105,8 @@ router.post('/auth', async (req: express.Request, res: express.Response) => {
     }
 
     res.status(500).json({
-      error: 'Ошибка сервера',
-      details: 'Произошла непредвиденная ошибка при входе',
+      error: 'Server error',
+      details: 'An unexpected error occurred during login',
     });
   }
 });

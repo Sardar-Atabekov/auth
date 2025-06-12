@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
@@ -11,6 +11,7 @@ export default function AuthPage() {
   const { setAuth } = useAuth();
   const { toast } = useToast();
   const [, navigate] = useLocation();
+  const [shouldNavigate, setShouldNavigate] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -41,6 +42,7 @@ export default function AuthPage() {
       const payload = {
         email: formData.email,
         password: formData.password,
+        lastLogin: new Date().toISOString(),
       };
 
       const response = await fetch(endpoint, {
@@ -52,19 +54,12 @@ export default function AuthPage() {
       });
 
       const data = await response.json();
-
+      console.log('Response data:', data, response, payload);
       if (!response.ok) {
         throw new Error(data.error || 'Authentication failed');
       }
 
-      const tokenParts = data.token.split('.');
-      const payload_decoded = JSON.parse(atob(tokenParts[1]));
-
-      setAuth(data.token, {
-        id: payload_decoded.id,
-        email: payload_decoded.email,
-        password: ' ',
-      });
+      setAuth(data.token, data.user);
 
       toast({
         title: 'Success!',
@@ -73,8 +68,9 @@ export default function AuthPage() {
           : 'Account created successfully!',
       });
 
-      navigate('/');
+      setShouldNavigate(true);
     } catch (err) {
+      console.log('Authentication error:', err);
       const errorMessage =
         err instanceof Error ? err.message : 'An error occurred';
       toast({
@@ -86,6 +82,12 @@ export default function AuthPage() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (shouldNavigate) {
+      navigate('/');
+    }
+  }, [shouldNavigate, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 bg-gray-50">
