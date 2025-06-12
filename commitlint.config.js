@@ -15,9 +15,12 @@
 // - subject (тема) должна быть в нижнем регистре, без точки в конце
 // - максимальная длина заголовка коммита — 72 символа
 
-module.exports = {
-  extends: ['@commitlint/config-conventional'],
+import configConventional from '@commitlint/config-conventional';
+
+export default {
+  ...configConventional,
   rules: {
+    ...configConventional.rules,
     'type-enum': [
       2,
       'always',
