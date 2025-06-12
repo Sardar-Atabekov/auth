@@ -26,7 +26,15 @@ router.post('/user', async (req, res) => {
     const newUser = await User.create({ email, password: hashed });
     const token = generateToken({ id: newUser.id, email });
 
-    res.status(201).json({ token });
+    res.status(201).json({
+      token,
+      user: {
+        id: newUser.id,
+        email: email,
+        lastLogin: new Date(),
+      },
+      expiresIn: '7d',
+    });
   } catch (err) {
     console.error('Register error:', err);
     res.status(400).json({ error: 'Invalid data' });
