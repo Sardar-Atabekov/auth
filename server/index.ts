@@ -14,9 +14,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-import authRoutes from './routes/auth';
-app.use('/api/auth', authRoutes);
-
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -81,3 +78,5 @@ console.log('Connecting to MongoDB...', process.env.MONGODB_DB);
     log(`serving on port ${port}`);
   });
 })();
+
+export { app };

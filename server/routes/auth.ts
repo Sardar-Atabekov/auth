@@ -53,6 +53,7 @@ router.post('/auth', async (req: express.Request, res: express.Response) => {
       });
     }
 
+    console.log('user', user);
     if (user.isLocked) {
       return res.status(403).json({
         error: 'Account is locked',
@@ -119,4 +120,5 @@ router.post('/auth', async (req: express.Request, res: express.Response) => {
   }
 });
 
+export { loginSchema };
 export default router;
