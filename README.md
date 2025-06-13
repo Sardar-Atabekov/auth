@@ -24,7 +24,7 @@ This is a fullstack authentication app built with **React + Express + MongoDB** 
 ### 1. Clone the repository
 
 ```sh
-git clone <repo-url>
+git clone https://github.com/Sardar-Atabekov/auth.git
 cd auth
 ```
 

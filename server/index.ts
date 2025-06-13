@@ -53,8 +53,6 @@ console.log('Connecting to MongoDB...', process.env.MONGODB_DB);
 
     await mongoose.connect(process.env.MONGODB_URI, {
       dbName: process.env.MONGODB_DB || 'userdb',
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
     });
 
     log('MongoDB connected');
